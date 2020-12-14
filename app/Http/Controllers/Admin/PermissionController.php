@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
+
+class PermissionController extends Controller
+{
+    /**
+     * __contruct
+     * @return void
+     */
+    
+    public function __construct()
+    {
+        $this->middleware('permission:permissions.index');
+    }
+
+    /**
+     * function index
+     * @return void
+     */
+
+     public function index()
+     {
+         $permission = Permission::latest()->when(request()->q,
+         function($permission){
+             $permission = $permission->where('name', 'like', '%'.request()->q.'%');
+         })->paginate(5);
+
+         return view('admin.permission.index', compact('permission'));
+
+     }
+}
